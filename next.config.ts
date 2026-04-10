@@ -1,7 +1,15 @@
 import type { NextConfig } from "next";
 
+/** Browser map key: NEXT_PUBLIC_* is required for client bundles; GOOGLE_MAPS_BROWSER_KEY is an optional alias (still bundled for the client—use a referrer-restricted JS key, not the server key). */
+const googleMapsBrowserKey =
+  process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY?.trim() ||
+  process.env.GOOGLE_MAPS_BROWSER_KEY?.trim() ||
+  "";
+
 const nextConfig: NextConfig = {
-  /* config options here */
+  env: {
+    NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: googleMapsBrowserKey,
+  },
 };
 
 export default nextConfig;

@@ -12,9 +12,23 @@ type GoogleGeocodeResponse = {
 export async function GET(request: Request) {
   const url = new URL(request.url)
   const address = (url.searchParams.get("address") ?? "").trim()
+  const latParam = url.searchParams.get("lat")
+  const lngParam = url.searchParams.get("lng")
+  const lat = latParam != null ? Number(latParam) : NaN
+  const lng = lngParam != null ? Number(lngParam) : NaN
+  const isReverse =
+    Number.isFinite(lat) &&
+    Number.isFinite(lng) &&
+    lat >= -90 &&
+    lat <= 90 &&
+    lng >= -180 &&
+    lng <= 180
 
-  if (address.length < 3) {
-    return NextResponse.json({ error: "Address too short" }, { status: 400 })
+  if (!isReverse && address.length < 3) {
+    return NextResponse.json(
+      { error: "Provide a valid address (3+ chars) or lat and lng for reverse geocoding" },
+      { status: 400 }
+    )
   }
 
   const apiKey = process.env.GOOGLE_MAPS_SERVER_API_KEY
@@ -26,8 +40,12 @@ export async function GET(request: Request) {
   }
 
   const googleUrl = new URL("https://maps.googleapis.com/maps/api/geocode/json")
-  googleUrl.searchParams.set("address", address)
-  googleUrl.searchParams.set("components", "country:US")
+  if (isReverse) {
+    googleUrl.searchParams.set("latlng", `${lat},${lng}`)
+  } else {
+    googleUrl.searchParams.set("address", address)
+    googleUrl.searchParams.set("components", "country:US")
+  }
   googleUrl.searchParams.set("key", apiKey)
 
   try {
@@ -42,7 +60,9 @@ export async function GET(request: Request) {
           error:
             data.error_message ??
             data.status ??
-            "Could not find coordinates for this address",
+            (isReverse
+              ? "Could not resolve address for these coordinates"
+              : "Could not find coordinates for this address"),
         },
         { status: 502 }
       )

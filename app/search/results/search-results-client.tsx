@@ -1,8 +1,12 @@
 "use client"
 
 import dynamic from "next/dynamic"
+import Link from "next/link"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
+import { CompareSelectionBar } from "@/components/search/compare-selection-bar"
+import { MAX_COMPARE_SELECTION } from "@/lib/compare/config"
+import type { CompareSelectionItem } from "@/lib/compare/types"
 import type { OrganizationDetailMeasurements } from "@/lib/organizations/org-detail-measures"
 import { OrganizationSearchCard } from "./organization-search-card"
 
@@ -58,6 +62,7 @@ export default function SearchResultsClient() {
   const [showMap, setShowMap] = useState(false)
   const [selectedMapId, setSelectedMapId] = useState<string | number | null>(null)
   const [reduceMotion, setReduceMotion] = useState(false)
+  const [compareSelection, setCompareSelection] = useState<CompareSelectionItem[]>([])
 
   const limit = Number(searchParams.get("limit") ?? 20)
 
@@ -136,6 +141,26 @@ export default function SearchResultsClient() {
     setSelectedMapId(id)
   }, [])
 
+  const toggleCompareOrganization = useCallback((org: SearchOrganization) => {
+    const id = String(org.id)
+    setCompareSelection((prev) => {
+      const exists = prev.some((p) => p.id === id)
+      if (exists) return prev.filter((p) => p.id !== id)
+      if (prev.length >= MAX_COMPARE_SELECTION) return prev
+      return [...prev, { id, name: org.name }]
+    })
+  }, [])
+
+  const removeCompareOrganization = useCallback((id: string) => {
+    setCompareSelection((prev) => prev.filter((p) => p.id !== id))
+  }, [])
+
+  const goToCompare = useCallback(() => {
+    if (compareSelection.length < 2) return
+    const qs = compareSelection.map((i) => encodeURIComponent(i.id)).join(",")
+    router.push(`/compare?ids=${qs}`)
+  }, [compareSelection, router])
+
   function requestBrowserLocation() {
     setGeoHint(null)
     if (typeof navigator === "undefined" || !navigator.geolocation) {
@@ -144,11 +169,28 @@ export default function SearchResultsClient() {
     }
     setIsLocating(true)
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      async (pos) => {
+        const lat = pos.coords.latitude
+        const lng = pos.coords.longitude
+        let locationLabel = "Current location"
+        try {
+          const response = await fetch(
+            `/api/places/geocode?lat=${encodeURIComponent(String(lat))}&lng=${encodeURIComponent(String(lng))}`
+          )
+          const json = (await response.json()) as {
+            formattedAddress?: string | null
+          }
+          if (response.ok && json.formattedAddress?.trim()) {
+            locationLabel = json.formattedAddress.trim()
+          }
+        } catch {
+          /* keep default label */
+        }
         setIsLocating(false)
         const params = new URLSearchParams(searchParams.toString())
-        params.set("userLat", String(pos.coords.latitude))
-        params.set("userLng", String(pos.coords.longitude))
+        params.set("location", locationLabel)
+        params.set("userLat", String(lat))
+        params.set("userLng", String(lng))
         params.set("offset", "0")
         router.replace(`/search/results?${params.toString()}`)
         setOffset(0)
@@ -193,6 +235,14 @@ export default function SearchResultsClient() {
     <main
       className={`mx-auto w-full px-4 py-10 ${showMap && canShowMap ? "max-w-6xl" : "max-w-3xl"}`}
     >
+      <div className="mb-4">
+        <Link
+          href="/search"
+          className="inline-flex items-center rounded border border-zinc-300 bg-white px-3 py-1.5 text-sm text-zinc-800 hover:bg-zinc-50"
+        >
+          ← Back to search
+        </Link>
+      </div>
       <h1 className="text-2xl font-semibold">Search results</h1>
       <div aria-live="polite" aria-atomic className="sr-only">
         {mapAnnouncement}
@@ -269,6 +319,12 @@ export default function SearchResultsClient() {
         </div>
       )}
 
+      <CompareSelectionBar
+        items={compareSelection}
+        onRemove={removeCompareOrganization}
+        onCompareClick={goToCompare}
+      />
+
       {loading && <p className="mt-6 text-sm text-zinc-600">Loading...</p>}
       {error && <p className="mt-6 text-sm text-red-700">{error}</p>}
       {data?.measurementsLoadError && (
@@ -324,6 +380,14 @@ export default function SearchResultsClient() {
                       mapIntegrationEnabled={showMap && canShowMap}
                       isMapSelected={String(selectedMapId) === String(organization.id)}
                       onSelectForMap={() => setSelectedMapId(organization.id)}
+                      compareSelected={compareSelection.some(
+                        (c) => c.id === String(organization.id)
+                      )}
+                      compareCanAdd={
+                        compareSelection.length < MAX_COMPARE_SELECTION ||
+                        compareSelection.some((c) => c.id === String(organization.id))
+                      }
+                      onCompareToggle={() => toggleCompareOrganization(organization)}
                     />
                   </li>
                 ))}

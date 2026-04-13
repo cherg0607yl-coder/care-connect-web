@@ -167,15 +167,29 @@ export default function SearchPage() {
     }
     setIsLocating(true)
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setIsLocating(false)
+      async (pos) => {
         const lat = pos.coords.latitude
         const lng = pos.coords.longitude
+        let locationLabel = "Current location"
+        try {
+          const response = await fetch(
+            `/api/places/geocode?lat=${encodeURIComponent(String(lat))}&lng=${encodeURIComponent(String(lng))}`
+          )
+          const json = (await response.json()) as {
+            formattedAddress?: string | null
+          }
+          if (response.ok && json.formattedAddress?.trim()) {
+            locationLabel = json.formattedAddress.trim()
+          }
+        } catch {
+          /* keep default label */
+        }
+        setIsLocating(false)
         setUserCoords({ lat, lng })
         setSelectedFromDropdown(false)
+        setLocationInput(locationLabel)
         const params = new URLSearchParams()
-        const loc = locationInput.trim()
-        if (loc) params.set("location", loc)
+        params.set("location", locationLabel)
         if (organizationName.trim()) {
           params.set("organizationName", organizationName.trim())
         }

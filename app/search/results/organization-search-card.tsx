@@ -15,6 +15,11 @@ type Props = {
   mapIntegrationEnabled?: boolean
   isMapSelected?: boolean
   onSelectForMap?: () => void
+  /** Compare flow: whether this org is in the compare tray */
+  compareSelected?: boolean
+  /** False when 3 orgs already selected and this org is not one of them */
+  compareCanAdd?: boolean
+  onCompareToggle?: () => void
 }
 
 export function OrganizationSearchCard({
@@ -28,13 +33,16 @@ export function OrganizationSearchCard({
   mapIntegrationEnabled = false,
   isMapSelected = false,
   onSelectForMap,
+  compareSelected = false,
+  compareCanAdd = true,
+  onCompareToggle,
 }: Props) {
   const [detailOpen, setDetailOpen] = useState(false)
 
   function handleCardPointerDown(event: MouseEvent<HTMLDivElement>) {
     if (!onSelectForMap) return
     const t = event.target as HTMLElement
-    if (t.closest("a, button")) return
+    if (t.closest("a, button, [data-compare-control]")) return
     onSelectForMap()
   }
 
@@ -84,6 +92,31 @@ export function OrganizationSearchCard({
               className="w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-center text-sm font-medium text-zinc-900 hover:bg-zinc-50"
             >
               Show on map
+            </button>
+          )}
+          {onCompareToggle && (
+            <button
+              type="button"
+              data-compare-control
+              disabled={!compareSelected && !compareCanAdd}
+              onClick={(e) => {
+                e.stopPropagation()
+                onCompareToggle()
+              }}
+              title={
+                !compareSelected && !compareCanAdd
+                  ? "You can compare up to 3 organizations. Remove one to add another."
+                  : undefined
+              }
+              className={`w-full rounded-lg border px-3 py-2 text-center text-sm font-medium ${
+                compareSelected
+                  ? "border-emerald-600 bg-emerald-50 text-emerald-900 hover:bg-emerald-100"
+                  : compareCanAdd
+                    ? "border-zinc-300 bg-white text-zinc-900 hover:bg-zinc-50"
+                    : "cursor-not-allowed border-zinc-200 bg-zinc-100 text-zinc-400"
+              }`}
+            >
+              {compareSelected ? "Selected" : "Compare"}
             </button>
           )}
           <button

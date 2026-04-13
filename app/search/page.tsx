@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import { FormEvent, useEffect, useMemo, useState } from "react"
 import { useRouter } from "next/navigation"
 
@@ -214,6 +215,14 @@ export default function SearchPage() {
       <p className="mb-4 text-sm text-zinc-600">
         Type an address and pick a suggestion, or use the button below to search near
         your current position (no typing).
+      </p>
+      <p className="mb-6">
+        <Link
+          href="/match"
+          className="inline-flex rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-sm font-medium text-emerald-900 hover:bg-emerald-100"
+        >
+          Find matching hospice organizations — short questionnaire
+        </Link>
       </p>
       <form onSubmit={(e) => void onSubmit(e)} className="space-y-4">
         <div>

@@ -10,6 +10,20 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: googleMapsBrowserKey,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "ennoblecare.com",
+        pathname: "/wp-content/**",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

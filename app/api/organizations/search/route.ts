@@ -139,6 +139,7 @@ async function fetchOrganizationsPage(
   if (userPoint) {
     q = q.not("latitude", "is", null).not("longitude", "is", null)
   }
+  q = q.order("Facility Name", { ascending: true })
   return q.range(from, to)
 }
 
@@ -199,7 +200,8 @@ export async function GET(request: Request) {
     const needsFullScan =
       Boolean(userPoint) ||
       (Boolean(zipInput) && !userPoint) ||
-      (Boolean(locationInput) && !zipInput && !userPoint)
+      (Boolean(locationInput) && !zipInput && !userPoint) ||
+      organizationName.length > 0
 
     const fetchCap = userPoint ? 5000 : zipInput ? 1500 : 800
 

@@ -336,9 +336,8 @@ export default function SearchResultsClient() {
           <p className="mt-1 font-mono text-xs opacity-90">{data.measurementsLoadError}</p>
           <p className="mt-2 text-xs text-amber-900/90">
             Check Supabase: table name <code className="rounded bg-amber-100/80 px-1">measurements</code>,
-            column names (including{" "}
-            <code className="rounded bg-amber-100/80 px-1">CMS Certification Number (CCN)</code>), and
-            RLS policies for the service role key used on the server.
+            column names used to link facilities to quality rows, and RLS policies for the service role
+            key used on the server.
           </p>
         </div>
       )}

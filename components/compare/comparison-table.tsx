@@ -30,11 +30,6 @@ export function ComparisonTable({ organizations }: Props) {
                     className="min-w-[180px] px-4 py-3 text-left font-semibold text-zinc-900"
                   >
                     <div className="line-clamp-3">{org.name}</div>
-                    {org.ccn && (
-                      <div className="mt-1 font-mono text-xs font-normal text-zinc-500">
-                        CCN {org.ccn}
-                      </div>
-                    )}
                   </th>
                 ))}
               </tr>

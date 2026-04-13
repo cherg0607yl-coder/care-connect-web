@@ -58,9 +58,6 @@ export function OrganizationSearchCard({
         <div className="min-w-0 flex-1 space-y-2">
           <div>
             <h2 className="text-lg font-semibold text-zinc-900">{name}</h2>
-            {ccn && (
-              <p className="mt-0.5 font-mono text-xs text-zinc-500">CCN {ccn}</p>
-            )}
           </div>
           <p className="text-sm text-zinc-600">{fullLocation || "Address not listed"}</p>
           {phone && (
@@ -130,7 +127,7 @@ export function OrganizationSearchCard({
             Full details
           </button>
           <p className="text-right text-[11px] leading-snug text-zinc-500">
-            Conditions, care locations, levels of care
+            Conditions & care settings
           </p>
         </div>
       </article>

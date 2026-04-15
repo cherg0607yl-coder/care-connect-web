@@ -3,7 +3,6 @@ export type RawMeasurementRow = {
   "Measure Code"?: string | null
   "Measure Name"?: string | null
   Score?: string | number | null
-  /** Primary column name in your Supabase dataset */
   "Measure Date Range"?: string | null
   measure_date?: string | null
   "Measure Date"?: string | null
@@ -23,9 +22,6 @@ export type DetailMeasureValue = {
 
 export type OrganizationDetailMeasurements = Record<string, DetailMeasureValue>
 
-/**
- * Align CCNs between `organizations` and `measurements` (trim, fix "12345.0", zero-pad numeric).
- */
 export function normalizeCcnForMatch(raw: string | null | undefined): string {
   if (raw == null || raw === "") return ""
   let s = String(raw).trim()

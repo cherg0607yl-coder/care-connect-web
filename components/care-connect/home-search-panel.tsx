@@ -1,6 +1,7 @@
 "use client"
 
 import { FormEvent, useEffect, useMemo, useState } from "react"
+import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { SearchBar } from "@/components/care-connect/search-bar"
 import { SearchHeroImage } from "@/components/care-connect/search-hero-image"
@@ -23,7 +24,6 @@ export function HomeSearchPanel() {
   const [isResolvingAddress, setIsResolvingAddress] = useState(false)
   const [isLocating, setIsLocating] = useState(false)
 
-  /** Main search requires an address/ZIP; organization name alone is not enough. */
   const canSubmitSearch = useMemo(
     () => locationInput.trim().length > 0,
     [locationInput]
@@ -31,6 +31,10 @@ export function HomeSearchPanel() {
 
   const submitButtonReady =
     canSubmitSearch && !isResolvingAddress && !isLocating
+
+  useEffect(() => {
+    router.prefetch("/match")
+  }, [router])
 
   useEffect(() => {
     const query = locationInput.trim()
@@ -227,7 +231,7 @@ export function HomeSearchPanel() {
             <div className="flex flex-col gap-4">
               <SearchBar
                 id="location"
-                label="Street address or ZIP code (*required)"
+                label="Street address, city, state, or ZIP code (*required)"
                 value={locationInput}
                 onChange={(v) => {
                   setLocationInput(v)
@@ -304,6 +308,13 @@ export function HomeSearchPanel() {
             >
               {isResolvingAddress ? "Resolving address…" : "Search organizations"}
             </button>
+
+            <Link
+              href="/match"
+              className="inline-flex w-fit rounded-lg border border-cc-text/20 px-4 py-2 text-sm font-medium text-cc-text transition hover:bg-cc-bg"
+            >
+              Take the questionnaire to find the best provider for you
+            </Link>
           </form>
         </div>
 

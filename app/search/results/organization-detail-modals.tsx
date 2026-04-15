@@ -34,14 +34,6 @@ const LOCATION_ROWS: { code: string; label: string }[] = [
   { code: "Care_Provided_other_locations", label: "Other locations" },
 ]
 
-const CARE_TYPE_ROWS: { code: string; label: string }[] = [
-  { code: "Provided_Home_Care_only", label: "Home care only" },
-  {
-    code: "Provided_Home_Care_and_other",
-    label: "Home care plus other levels (e.g. nursing or inpatient)",
-  },
-]
-
 function score(m: OrganizationDetailMeasurements, code: string): string {
   return m[code]?.scoreDisplay ?? "—"
 }
@@ -207,16 +199,6 @@ export function OrganizationDetailModals({
               measurements={measurements}
               firstColumnHeader="Place"
               valueHeader="Percent of care"
-            />
-          </section>
-
-          <section className="mt-8">
-            <h3 className="text-base font-semibold text-zinc-900">Types of care offered</h3>
-            <MeasureTable
-              rows={CARE_TYPE_ROWS}
-              measurements={measurements}
-              firstColumnHeader="Type"
-              valueHeader="On record"
             />
           </section>
 

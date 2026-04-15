@@ -6,7 +6,6 @@ type SearchBarProps = {
   value: string
   onChange: (value: string) => void
   placeholder?: string
-  /** Renders below the input (e.g. autocomplete list, hints) */
   children?: ReactNode
 } & Omit<InputHTMLAttributes<HTMLInputElement>, "id" | "value" | "onChange">
 

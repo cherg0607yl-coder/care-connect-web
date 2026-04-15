@@ -7,6 +7,9 @@ const googleMapsBrowserKey =
   "";
 
 const nextConfig: NextConfig = {
+  turbopack: {
+    root: process.cwd(),
+  },
   env: {
     NEXT_PUBLIC_GOOGLE_MAPS_API_KEY: googleMapsBrowserKey,
   },

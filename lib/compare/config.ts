@@ -18,8 +18,6 @@ export const COMPARE_MEASURE_CODES: readonly CompareMeasureCode[] = [
   "Care_Provided_Inpatient_Hospital",
   "Care_Provided_Inpatient_Hospice",
   "Care_Provided_other_locations",
-  "Provided_Home_Care_only",
-  "Provided_Home_Care_and_other",
 ] as const
 
 /** Sections and labels — edit here to add quality metrics later. */
@@ -82,24 +80,6 @@ export const COMPARE_SECTIONS: CompareSectionConfig[] = [
         key: "Care_Provided_other_locations",
         label: "Other locations",
         format: "percent",
-      },
-    ],
-  },
-  {
-    id: "level-of-care",
-    title: "Level of care provided",
-    description:
-      "All Medicare-certified hospices are required to offer 4 levels of hospice care depending on patient and caregiver needs.",
-    fields: [
-      {
-        key: "Provided_Home_Care_only",
-        label: "Provided routine home care only",
-        format: "yesNo",
-      },
-      {
-        key: "Provided_Home_Care_and_other",
-        label: "Provided routine home care and at least one other level of care",
-        format: "yesNo",
       },
     ],
   },

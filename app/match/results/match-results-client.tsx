@@ -2,10 +2,47 @@
 
 import Link from "next/link"
 import { useMemo, useState } from "react"
-import type { MatchQuestionnaire, RankedHospiceMatch } from "@/lib/matching/types"
+import type { LayerBreakdown, MatchQuestionnaire, RankedHospiceMatch } from "@/lib/matching/types"
 import { OrganizationDetailModals } from "@/app/search/results/organization-detail-modals"
 
 const STORAGE_KEY = "care-connect-match-v1"
+
+function fmtPts(n: number): string {
+  return (Math.round(n * 10) / 10).toFixed(1)
+}
+
+function LayerRow({ label, layer }: { label: string; layer: LayerBreakdown }) {
+  return (
+    <div className="flex justify-between gap-4">
+      <span className="text-zinc-600">{label}</span>
+      <span className="tabular-nums text-zinc-900">
+        {fmtPts(layer.pointsEarned)} / {fmtPts(layer.pointsMax)}
+      </span>
+    </div>
+  )
+}
+
+function MatchScoreTooltip({ id, match }: { id: string; match: RankedHospiceMatch }) {
+  const b = match.breakdown
+  return (
+    <div
+      id={id}
+      role="tooltip"
+      className="pointer-events-none invisible absolute right-0 top-full z-20 mt-2 w-max min-w-[220px] rounded-lg border border-zinc-200 bg-white p-3 text-left shadow-lg opacity-0 transition-opacity duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100"
+    >
+      <p className="mb-2 text-[11px] font-semibold uppercase tracking-wide text-zinc-500">Score breakdown</p>
+      <div className="space-y-1.5 text-xs">
+        <LayerRow label="Distance" layer={b.distance} />
+        <p className="pt-1 text-[11px] font-medium text-zinc-500">Fit</p>
+        <LayerRow label="Condition" layer={b.fit.condition} />
+        <LayerRow label="Setting" layer={b.fit.setting} />
+        <LayerRow label="Intensity" layer={b.fit.intensity} />
+        <LayerRow label="Quality" layer={b.quality} />
+        <LayerRow label="Confidence" layer={b.confidence} />
+      </div>
+    </div>
+  )
+}
 
 type StoredPayload = {
   questionnaire?: MatchQuestionnaire
@@ -93,8 +130,18 @@ export default function MatchResultsClient() {
                 <h2 className="text-lg font-semibold text-zinc-900">{m.name}</h2>
               </div>
               <div className="text-right">
-                <p className="text-2xl font-bold text-emerald-900">{m.totalScore}</p>
-                <p className="text-xs text-zinc-500">match score (0–100)</p>
+                <div
+                  className="group relative inline-block rounded text-right focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-600/35 focus-visible:ring-offset-2"
+                  tabIndex={0}
+                  title="Hover or press Tab and focus here for score breakdown"
+                  aria-describedby={`score-tip-${m.organizationId}`}
+                >
+                  <p className="cursor-help text-2xl font-bold text-emerald-900 underline decoration-zinc-300 decoration-dotted underline-offset-4">
+                    {m.totalScore}
+                  </p>
+                  <p className="text-xs text-zinc-500">match score (0–100)</p>
+                  <MatchScoreTooltip id={`score-tip-${m.organizationId}`} match={m} />
+                </div>
               </div>
             </div>
             <p className="mt-2 text-sm text-zinc-600">{m.fullLocation}</p>

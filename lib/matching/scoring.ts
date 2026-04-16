@@ -9,7 +9,6 @@ import {
   normalizeHospiceCareIndex,
   normalizeLowerBetter,
   parseNumeric,
-  parseYesNo,
 } from "@/lib/matching/normalize"
 import type { LayerBreakdown, MatchOrganizationInput, MatchQuestionnaire } from "@/lib/matching/types"
 import { FIT_SUB, QUALITY_WEIGHTS, userWantsEolBoost } from "@/lib/matching/weights"
@@ -17,14 +16,12 @@ import { FIT_SUB, QUALITY_WEIGHTS, userWantsEolBoost } from "@/lib/matching/weig
 function weightedAverage(
   entries: { weight: number; value: number | null }[]
 ): { value: number | null; usedWeight: number; totalWeight: number } {
-  let used = 0
   let sumW = 0
   let sumWV = 0
   for (const { weight, value } of entries) {
     if (value == null || weight <= 0) continue
     sumW += weight
     sumWV += weight * value
-    used += 1
   }
   if (sumW <= 0) return { value: null, usedWeight: 0, totalWeight: 0 }
   return { value: sumWV / sumW, usedWeight: sumW, totalWeight: sumW }
@@ -122,32 +119,26 @@ export function scoreSettingFit(
 }
 
 function orgIntensityNormalized(org: MatchOrganizationInput): number | null {
-  const andOther = parseYesNo(org.measures["Provided_Home_Care_and_other"])
-  const only = parseYesNo(org.measures["Provided_Home_Care_only"])
-  if (andOther === true) return 1
-  if (only === true && andOther === false) return 0.38
-  if (andOther === false && only === false) return 0.55
-  if (andOther == null && only == null) return null
-  return 0.62
+  return normalizeHigherBetter(org.measures["H_011_01_OBSERVED"] ?? null, 100)
 }
 
 function intensityImportanceBlend(q: MatchQuestionnaire, orgValue: number | null): number | null {
   if (orgValue == null) return null
-  const neutral = 0.78
+  const neutral = 0.7
   let factor = 1
   switch (q.intensityImportance) {
     case "very":
       factor = 1
       break
     case "somewhat":
-      factor = 0.72
+      factor = 0.65
       break
     case "not":
-      factor = 0.35
+      factor = 0.2
       break
     case "not_sure":
     default:
-      factor = 0.55
+      factor = 0.4
       break
   }
   return neutral + (orgValue - neutral) * factor
@@ -162,16 +153,18 @@ export function scoreIntensityFit(
   const raw = orgIntensityNormalized(org)
   const blended = intensityImportanceBlend(q, raw)
   if (blended == null) {
-    notes.push("Level-of-care flags not available — neutral contribution.")
+    notes.push("Hospice visits in the last days of life were not available — neutral contribution.")
     return { pointsEarned: subMax * 0.72, pointsMax: subMax, detailNotes: notes }
   }
   const earned = subMax * Math.max(0, Math.min(1, blended))
-  if (raw != null && raw >= 0.9 && q.intensityImportance === "very") {
-    notes.push("Reports routine home care plus at least one higher-intensity level — aligned with your preference.")
-  } else if (raw != null && raw < 0.5 && q.intensityImportance === "very") {
-    notes.push("Mostly routine home care in public data — consider asking the provider about continuous care / inpatient options.")
+  if (raw != null && raw >= 0.8 && q.intensityImportance === "very") {
+    notes.push("High share of end-of-life visits reported — aligned with your preference for stronger visit intensity.")
+  } else if (raw != null && raw < 0.55 && q.intensityImportance === "very") {
+    notes.push("Lower reported end-of-life visit share — ask about late-stage visit cadence and availability.")
+  } else if (raw != null && raw >= 0.75) {
+    notes.push("Stronger end-of-life visit coverage in public reporting.")
   } else {
-    notes.push("Level-of-care capability weighed based on how important that is to you.")
+    notes.push("Hospice visit intensity is weighed based on how important intensive support is to you.")
   }
   return { pointsEarned: earned, pointsMax: subMax, detailNotes: notes }
 }
@@ -180,7 +173,6 @@ function qualityNormalizedScore(code: string, raw: string | null): number | null
   switch (code) {
     case "H_012_00_OBSERVED":
       return normalizeHospiceCareIndex(raw)
-    case "H_011_01_OBSERVED":
     case "H_008_01_OBSERVED":
     case "H_012_10_OBSERVED":
     case "H_012_01_OBSERVED":

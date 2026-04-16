@@ -17,15 +17,14 @@ export const FIT_SUB = {
 
 /** Relative weights inside the quality layer (sum = 1). Missing codes renormalize within layer. */
 export const QUALITY_WEIGHTS: Record<string, number> = {
-  H_012_00_OBSERVED: 0.38,
-  H_011_01_OBSERVED: 0.22,
-  H_012_10_OBSERVED: 0.14,
-  H_008_01_OBSERVED: 0.08,
-  H_012_01_OBSERVED: 0.06,
-  H_012_08_OBSERVED: 0.05,
-  H_012_09_OBSERVED: 0.04,
-  H_012_02_OBSERVED: 0.015,
-  H_012_05_OBSERVED: 0.015,
+  H_012_00_OBSERVED: 0.487,
+  H_012_10_OBSERVED: 0.18,
+  H_008_01_OBSERVED: 0.103,
+  H_012_01_OBSERVED: 0.077,
+  H_012_08_OBSERVED: 0.064,
+  H_012_09_OBSERVED: 0.051,
+  H_012_02_OBSERVED: 0.019,
+  H_012_05_OBSERVED: 0.019,
 }
 
 /**

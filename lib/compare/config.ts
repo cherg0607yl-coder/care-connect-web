@@ -1,8 +1,7 @@
 import type { CompareMeasureCode, CompareSectionConfig } from "@/lib/compare/types"
 
 /**
- * Central list of measure codes loaded for comparison (must match `Measure Code` in Supabase).
- * Used by the Supabase query so we do not fetch unused rows.
+ * Central list of measure codes loaded for comparison (CMS Provider Data `measure_code` values).
  */
 export const COMPARE_MEASURE_CODES: readonly CompareMeasureCode[] = [
   "Pct_Pts_w_Cancer",

@@ -13,7 +13,7 @@ function idToString(id: string | number | null | undefined, fallback: string): s
 }
 
 /**
- * Map a raw Supabase organization row + latest measure scores into `ComparisonOrganization`.
+ * Map a CMS-shaped organization row + latest measure scores into `ComparisonOrganization`.
  */
 export function mapRawToComparisonOrganization(
   raw: RawCompareOrganizationRow,

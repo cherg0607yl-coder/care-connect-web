@@ -1,6 +1,6 @@
 /**
  * Comparison feature types.
- * Field keys for measurements match Supabase `measurements` rows (`Measure Code` values).
+ * Field keys for measurements match CMS Provider Data `measure_code` values.
  */
 
 /** One organization the user selected to compare (search results UI). */
@@ -49,7 +49,7 @@ export type CompareMeasureCode =
   | "Provided_Home_Care_only"
   | "Provided_Home_Care_and_other"
 
-/** Raw organizations row from Supabase — adjust column names in `getOrganizationsForComparison` if yours differ. */
+/** Legacy CMS-shaped org row used by `mapRawToComparisonOrganization`. */
 export type RawCompareOrganizationRow = {
   ID?: string | number | null
   "CMS Certification Number (CCN)"?: string | null

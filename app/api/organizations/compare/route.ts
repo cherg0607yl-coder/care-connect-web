@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { MIN_COMPARE_URL } from "@/lib/compare/config"
-import { getOrganizationsForComparison } from "@/lib/supabase/queries/getOrganizationsForComparison"
+import { getOrganizationsForComparison } from "@/lib/organizations/getOrganizationsForComparison"
 
 const MAX_IDS = 3
 

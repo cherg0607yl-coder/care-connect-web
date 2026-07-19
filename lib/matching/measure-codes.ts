@@ -1,7 +1,7 @@
 import { ORG_DETAIL_MEASURE_CODES } from "@/lib/organizations/org-detail-measures"
 
 /**
- * V1 quality / process measures (exact `Measure Code` values in Supabase `measurements`).
+ * V1 quality / process measures (exact CMS `measure_code` values).
  * Higher-is-better unless listed in LOWER_IS_BETTER_QUALITY_CODES.
  */
 export const MATCH_QUALITY_HIGHER_CODES = [

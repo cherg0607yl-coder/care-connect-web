@@ -335,9 +335,9 @@ export default function SearchResultsClient() {
           <p className="font-medium">Quality data could not be loaded</p>
           <p className="mt-1 font-mono text-xs opacity-90">{data.measurementsLoadError}</p>
           <p className="mt-2 text-xs text-amber-900/90">
-            Check Supabase: table name <code className="rounded bg-amber-100/80 px-1">measurements</code>,
-            column names used to link facilities to quality rows, and RLS policies for the service role
-            key used on the server.
+            Quality measures come from the local CMS cache. Run{" "}
+            <code className="rounded bg-amber-100/80 px-1">npm run sync:cms</code> if the cache is
+            missing or stale.
           </p>
         </div>
       )}

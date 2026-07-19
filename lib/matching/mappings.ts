@@ -1,6 +1,6 @@
 import type { CareSettingPreference, PrimaryCondition } from "@/lib/matching/types"
 
-/** Maps questionnaire condition → `Pct_Pts_w_*` measure code (Supabase). */
+/** Maps questionnaire condition → `Pct_Pts_w_*` CMS measure code. */
 export function conditionToPctMeasure(condition: PrimaryCondition): string | null {
   switch (condition) {
     case "cancer":

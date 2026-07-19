@@ -37,10 +37,12 @@ Frontend:
 Backend:
 
 - Next.js API Routes
+- Local CMS hospice cache (`data/cms/cache.json`, refreshed via `npm run sync:cms`)
 
-Database:
+Data sources:
 
-- Supabase (PostgreSQL)
+- [CMS Hospice General Information](https://data.cms.gov/provider-data/dataset/yc9t-dgbk)
+- [CMS Hospice Provider Data](https://data.cms.gov/provider-data/dataset/252m-zfp9)
 
 APIs:
 
@@ -49,7 +51,15 @@ APIs:
 ## How It Works
 
 1. Users enter a location or search for hospice providers
-2. The system retrieves nearby organizations from the database
+2. The system retrieves nearby organizations from the synced CMS cache
 3. A matching algorithm scores organizations based on user preferences and care metrics
 4. Results are ranked and displayed with key information
 5. Users can compare organizations side-by-side to make informed decisions
+
+## CMS data sync
+
+```bash
+npm run sync:cms
+```
+
+This downloads official CMS hospice datasets, geocodes facilities by ZIP centroid, and writes `data/cms/cache.json`.

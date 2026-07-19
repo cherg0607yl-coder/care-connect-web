@@ -29,7 +29,7 @@ export type OrganizationSearchResult = {
   offset: number
   appliedRadiusMiles: number | null
   wasAutoExpanded: boolean
-  /** Set when the measurements query fails (wrong table name, RLS, column mismatch, etc.). */
+  /** Set when quality measures cannot be loaded from the CMS cache. */
   measurementsLoadError: string | null
 }
 

@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { ComparisonTable } from "@/components/compare/comparison-table"
 import { MIN_COMPARE_URL } from "@/lib/compare/config"
-import { getOrganizationsForComparison } from "@/lib/supabase/queries/getOrganizationsForComparison"
+import { getOrganizationsForComparison } from "@/lib/organizations/getOrganizationsForComparison"
 
 const MAX_IDS = 3
 
@@ -77,13 +77,8 @@ export default async function ComparePage({
         <h1 className="text-2xl font-semibold text-zinc-900">Could not load comparison</h1>
         <p className="mt-3 text-sm text-red-800">{loadError}</p>
         <p className="mt-4 text-sm text-zinc-600">
-          If the error mentions a missing column, edit{" "}
-          <code className="rounded bg-zinc-100 px-1 text-xs">COMPARE_ORGANIZATION_SELECT</code> in{" "}
-          <code className="rounded bg-zinc-100 px-1 text-xs">
-            lib/supabase/queries/getOrganizationsForComparison.ts
-          </code>{" "}
-          to match your <code className="rounded bg-zinc-100 px-1 text-xs">organizations</code>{" "}
-          table.
+          Try re-running <code className="rounded bg-zinc-100 px-1 text-xs">npm run sync:cms</code>{" "}
+          to refresh the local CMS hospice cache, then reload this page.
         </p>
       </main>
     )
